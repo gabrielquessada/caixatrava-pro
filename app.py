@@ -170,3 +170,4 @@ with aba5:
         st.pyplot(fig)
     else:
         st.write("Sem gastos registrados ainda.")
+        
