@@ -7,16 +7,16 @@ st.set_page_config(page_title="CaixaTrava Pro", page_icon="💼", layout="wide")
 st.title("💼 CaixaTrava Pro — Gestão de Gastos, Pedidos & Investimentos")
 st.markdown("---")
 
+# Inicializar estados
 if 'pedidos' not in st.session_state:
     st.session_state.pedidos = pd.DataFrame([
-        {"Cliente": "Michel", "Categoria": "Personalizados", "Produto": "michel", "Valor": 72.00, "Status": "Pago", "Filamento": 19.46, "Eletricidade": 1.10, "Impressora": 12.81, "Trabalho": 30.00, "Lucro": 8.63},
-        {"Cliente": "MIGUEL", "Categoria": "Nomes", "Produto": "projeto mih", "Valor": 18.74, "Status": "Pendente", "Filamento": 0.70, "Eletricidade": 0.07, "Impressora": 0.84, "Trabalho": 2.50, "Lucro": 14.63},
-        {"Cliente": "Milena", "Categoria": "Nomes", "Produto": "MILENA", "Valor": 18.80, "Status": "Pago", "Filamento": 0.70, "Eletricidade": 0.08, "Impressora": 0.88, "Trabalho": 2.50, "Lucro": 14.64}
+        {"Cliente": "Michel", "Categoria": "Personalizados", "Produto": "michel", "Valor": 101.65, "Status": "Pago", "Filamento": 19.46, "Eletricidade": 1.10, "Impressora": 12.81, "Trabalho": 30.00, "Lucro": 20.00},
+        {"Cliente": "Harry Fã", "Categoria": "Harry Potter", "Produto": "HP1 (Livros)", "Valor": 51.00, "Status": "Pendente", "Filamento": 20.44, "Eletricidade": 0.83, "Impressora": 2.78, "Trabalho": 2.50, "Lucro": 10.00}
     ])
 
 if 'gastos' not in st.session_state:
     st.session_state.gastos = pd.DataFrame([
-        {"Data": "18/11/2026", "Descricao": "Filamento Voolt3D", "Tipo": "Empresa", "Forma": "Crédito", "Essencial": "Essencial", "Valor": 75.00},
+        {"Data": "18/11/2026", "Descricao": "Filamento Voolt3D PLA", "Tipo": "Empresa", "Forma": "Crédito", "Essencial": "Essencial", "Valor": 75.00},
         {"Data": "17/11/2026", "Descricao": "Conta de Luz", "Tipo": "Empresa", "Forma": "Pix", "Essencial": "Essencial", "Valor": 45.00}
     ])
 
@@ -26,41 +26,55 @@ if 'metas' not in st.session_state:
         {"Nome": "Segunda Impressora 3D", "Alvo": 2500.00, "Guardado": 625.00}
     ]
 
-aba1, aba2, aba3, aba4, aba5 = st.tabs(["📦 Pedidos & Multi-Abas", "💳 Gastos (Trava)", "🎯 Metas", "📈 Investimentos", "📊 Gráficos & Análise"])
+# Abas do App
+aba1, aba2, aba3, aba4, aba5 = st.tabs(["📦 Pedidos & Catálogo Completo", "💳 Gastos (Trava)", "🎯 Metas", "📈 Investimentos", "📊 Gráficos & Análise"])
 
+# ==================== ABA 1: PEDIDOS & CATÁLOGO COMPLETO ====================
 with aba1:
-    st.subheader("📦 Gestão de Pedidos (Todas as Abas e Categorias)")
-    st.markdown("Cadastre pedidos puxando produtos de diferentes abas da sua planilha (Nomes, Personalizados, Produtos, Dia dos Namorados, etc.).")
+    st.subheader("📦 Gestão de Pedidos (Todas as Abas da Planilha)")
+    st.markdown("Selecione a categoria/aba correspondente aos seus produtos de impressão (Harry Potter, Personalizados, Nomes, Em Site, etc.).")
     
-    catalogo_produtos = {
-        "Nomes": {"projeto mih": 18.74, "MILENA": 18.80, "pedro": 18.40},
-        "Personalizados": {"projeto mih (Pers)": 20.17, "SDPS": 42.44, "michel": 101.65, "tempestade ge de": 46.03},
-        "Produtos": {"Suporte Padrão": 35.00, "Vaso Minimalista": 25.00},
-        "Dia dos Namorados": {"Coração Base LED": 89.90, "Chaveiro Casal": 29.90}
+    # Catálogo espelhado de todas as abas da sua planilha
+    catalogo_abas = {
+        "Harry Potter": {
+            "HP1 (Livros)": 51.00, "HP2": 33.45, "HP3": 75.12, "HP4 (Chapéu Seletor)": 48.32, 
+            "HP5": 19.83, "HP6": 27.88, "HP7": 29.39, "HP8 (Suporte Livros)": 37.23, 
+            "HP9": 66.72, "HP10": 68.42, "HP16 (Pomo de Ouro)": 33.40
+        },
+        "Personalizados": {
+            "projeto mih": 20.17, "SDPS": 42.44, "michel": 101.65, "tempestade ge de": 46.03
+        },
+        "Nomes": {
+            "MIGUEL": 18.74, "MILENA": 18.80, "pedro": 18.40
+        },
+        "Em Site / Outros": {
+            "Chaveiro Pokebola": 6.96, "Funko Pop Miles Morales": 11.71, "Estrela Sensorial": 15.55
+        }
     }
     
     col1, col2, col3, col4, col5 = st.columns(5)
-    with col1: cli = st.text_input("Cliente / Projeto")
-    with col2: cat_selecionada = st.selectbox("Aba / Categoria", list(catalogo_produtos.keys()))
-    with col3: prod_selecionado = st.selectbox("Produto", list(catalogo_produtos[cat_selecionada].keys()))
+    with col1: cli = st.text_input("Nome do Cliente")
+    with col2: cat_escolhida = st.selectbox("Aba / Categoria", list(catalogo_abas.keys()))
+    with col3: prod_escolhido = st.selectbox("Produto da Aba", list(catalogo_abas[cat_escolhida].keys()))
     
-    val_sugerido = catalogo_produtos[cat_selecionada][prod_selecionado]
+    # Valor sugerido automático da planilha
+    val_sugerido = catalogo_abas[cat_escolhida][prod_escolhido]
     with col4: val = st.number_input("Valor de Venda (R$)", value=val_sugerido, min_value=0.0, step=0.01)
     with col5: status = st.selectbox("Status", ["Pendente", "Pago"])
     
-    if st.button("Adicionar Pedido das Abas"):
+    if st.button("Adicionar Pedido"):
         if cli and val > 0:
             novo_p = pd.DataFrame([{
                 "Cliente": cli, 
-                "Categoria": cat_selecionada, 
-                "Produto": prod_selecionado, 
+                "Categoria": cat_escolhida, 
+                "Produto": prod_escolhido, 
                 "Valor": val, 
                 "Status": status, 
-                "Filamento": val*0.25, 
-                "Eletricidade": val*0.05, 
-                "Impressora": val*0.20, 
-                "Trabalho": val*0.20, 
-                "Lucro": val*0.30
+                "Filamento": val * 0.30, 
+                "Eletricidade": val * 0.05, 
+                "Impressora": val * 0.15, 
+                "Trabalho": val * 0.20, 
+                "Lucro": val * 0.30
             }])
             st.session_state.pedidos = pd.concat([st.session_state.pedidos, novo_p], ignore_index=True)
             st.success("Pedido adicionado com sucesso!")
@@ -68,8 +82,10 @@ with aba1:
             
     st.dataframe(st.session_state.pedidos, use_container_width=True)
 
+# ==================== ABA 2: GASTOS ====================
 with aba2:
     st.subheader("💳 Registrar Gasto com Trava de Saldo")
+    
     p_pagos = st.session_state.pedidos[st.session_state.pedidos['Status'] == 'Pago']['Valor'].sum()
     g_nao_credito = st.session_state.gastos[st.session_state.gastos['Forma'] != 'Crédito']['Valor'].sum()
     saldo_livre = p_pagos - g_nao_credito
@@ -79,11 +95,11 @@ with aba2:
     col1, col2, col3, col4, col5 = st.columns(5)
     with col1: desc = st.text_input("Descrição do Gasto")
     with col2: g_val = st.number_input("Valor (R$)", min_value=0.0, step=0.01, key="g_val")
-    with col3: forma = st.selectbox("Forma", ["Pix", "Débito", "Crédito"])
-    with col4: tipo = st.selectbox("Tipo", ["Empresa", "Pessoal"])
+    with col3: forma = st.selectbox("Forma de Pagamento", ["Pix", "Débito", "Crédito"])
+    with col4: tipo = st.selectbox("Tipo de Gasto", ["Empresa", "Pessoal"])
     with col5: essencial = st.selectbox("Essencialidade", ["Essencial", "Desnecessário"])
     
-    if st.button("Registrar Gasto"):
+    if st.button("Registrar e Validar Gasto"):
         if desc and g_val > 0:
             if forma != 'Crédito' and g_val > saldo_livre:
                 st.error("❌ BLOQUEIO DE SEGURANÇA: Gasto negado! O valor excede seu saldo disponível em Pix/Débito.")
@@ -95,14 +111,15 @@ with aba2:
                 
     st.dataframe(st.session_state.gastos, use_container_width=True)
 
+# ==================== ABA 3: METAS ====================
 with aba3:
-    st.subheader("🎯 Suas Metas Financeiras")
+    st.subheader("🎯 Controle de Metas Financeiras")
     c1, c2, c3 = st.columns(3)
     with c1: m_nome = st.text_input("Nome da Meta")
     with c2: m_alvo = st.number_input("Valor Alvo (R$)", min_value=0.0, step=0.01)
     with c3: m_ini = st.number_input("Valor Inicial Guardado (R$)", min_value=0.0, step=0.01)
     
-    if st.button("Criar Meta"):
+    if st.button("Criar Nova Meta"):
         if m_nome and m_alvo > 0:
             st.session_state.metas.append({"Nome": m_nome, "Alvo": m_alvo, "Guardado": m_ini})
             st.success("Meta criada!")
@@ -120,14 +137,16 @@ with aba3:
         with col_m1:
             val_add = st.number_input(f"Guardar em {m['Nome']}", min_value=0.0, step=10.0, key=f"add_{idx}")
         with col_m2:
-            if st.button("Adicionar", key=f"btn_{idx}"):
+            if st.button("Adicionar Valor", key=f"btn_{idx}"):
                 st.session_state.metas[idx]["Guardado"] += val_add
                 st.rerun()
         st.markdown("---")
 
+# ==================== ABA 4: INVESTIMENTOS ====================
 with aba4:
     st.subheader("📈 Carteira de Investimentos Automática")
     st.info("O sistema separa automaticamente 20% de todos os ganhos (pedidos pagos) divididos entre Dólar, CDB e Renda Variável.")
+    
     total_pagos = st.session_state.pedidos[st.session_state.pedidos['Status'] == 'Pago']['Valor'].sum()
     total_investido_auto = total_pagos * 0.20
     
@@ -140,6 +159,7 @@ with aba4:
     col_i2.metric("🏦 CDB (50%)", f"R$ {inv_cdb:.2f}")
     col_i3.metric("📊 Renda Variável (20%)", f"R$ {inv_rv:.2f}")
 
+# ==================== aba 5: GRÁFICOS ====================
 with aba5:
     st.subheader("📊 Análise Gráfica de Essencialidade")
     if not st.session_state.gastos.empty:
