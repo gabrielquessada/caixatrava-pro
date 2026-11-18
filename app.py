@@ -25,13 +25,13 @@ if 'metas' not in st.session_state:
         {"Nome": "Segunda Impressora 3D", "Alvo": 2500.00, "Guardado": 625.00}
     ]
 
-aba1, aba2, aba3, aba4, aba5 = st.tabs(["📦 Pedidos & Catálogo", "💳 Gastos (Trava)", "🎯 Metas", "📈 Investimentos", "📊 Gráficos & Análise"])
+aba1, aba2, aba3, aba4, aba5 = st.tabs(["📦 Pedidos & Catálogo Total", "💳 Gastos (Trava)", "🎯 Metas", "📈 Investimentos", "📊 Gráficos & Análise"])
 
 with aba1:
-    st.subheader("📦 Gestão de Pedidos (Todas as Abas e Produtos da Planilha)")
-    st.markdown("Selecione qualquer aba e produto cadastrado nas suas planilhas de custos ou adicione um item manual.")
+    st.subheader("📦 Gestão de Pedidos (Catálogo Completo + Busca Livre)")
+    st.markdown("Selecione a categoria ou digite diretamente o nome de qualquer produto da sua planilha para registrar o pedido.")
     
-    # Catálogo completo extraído de todas as abas das suas planilhas
+    # Dicionário completo com todas as abas e produtos consolidados
     catalogo_abas = {
         "Harry Potter": {
             "HP1": 51.00, "HP2": 33.45, "HP3": 75.12, "HP4": 48.32, "HP5": 19.83, 
@@ -98,9 +98,6 @@ with aba1:
         },
         "Suporte De Joias": {
             "Organizador de Joias": 25.00, "Suporte para Brincos": 25.00
-        },
-        "Outro / Digitar Manual": {
-            "Novo Produto": 0.00
         }
     }
     
@@ -112,21 +109,21 @@ with aba1:
     with col3: 
         prod_escolhido = st.selectbox("Produto / Nome", produtos_disponiveis)
     
-    if prod_escolhido == "Novo Produto":
-        prod_escolhido = st.text_input("Digite o nome do produto novo", value="Item Novo")
-        val_sugerido = 0.0
-    else:
-        val_sugerido = catalogo_abas[cat_escolhida][prod_escolhido]
+    val_sugerido = catalogo_abas[cat_escolhida][prod_escolhido]
 
     with col4: val = st.number_input("Valor de Venda (R$)", value=float(val_sugerido), min_value=0.0, step=0.01)
     with col5: status = st.selectbox("Status do Pedido", ["Pendente", "Pago"])
     
+    # Campo extra para busca ou digitação livre de qualquer produto ausente
+    produto_livre = st.text_input("💡 Ou digite o nome de qualquer outro produto/personalizado caso não esteja na lista acima:")
+    
     if st.button("Adicionar Pedido"):
-        if cli and val > 0:
+        nome_final = produto_livre if produto_livre.strip() != "" else prod_escolhido
+        if cli and (val > 0 or nome_final):
             novo_p = pd.DataFrame([{
                 "Cliente": cli, 
                 "Categoria": cat_escolhida, 
-                "Produto": prod_escolhido, 
+                "Produto": nome_final, 
                 "Valor": val, 
                 "Status": status, 
                 "Filamento": val * 0.30, 
