@@ -25,13 +25,13 @@ if 'metas' not in st.session_state:
         {"Nome": "Segunda Impressora 3D", "Alvo": 2500.00, "Guardado": 625.00}
     ]
 
-aba1, aba2, aba3, aba4, aba5 = st.tabs(["📦 Pedidos & Todas as Abas", "💳 Gastos (Trava)", "🎯 Metas", "📈 Investimentos", "📊 Gráficos & Análise"])
+aba1, aba2, aba3, aba4, aba5 = st.tabs(["📦 Pedidos & Catálogo", "💳 Gastos (Trava)", "🎯 Metas", "📈 Investimentos", "📊 Gráficos & Análise"])
 
 with aba1:
-    st.subheader("📦 Gestão de Pedidos (Catálogo Completo de Abas e Nomes)")
-    st.markdown("Selecione a aba correspondente da sua planilha para puxar os produtos e preços corretos.")
+    st.subheader("📦 Gestão de Pedidos (Todas as Abas + Cadastro Manual)")
+    st.markdown("Escolha a aba da planilha ou digite diretamente o nome do produto caso queira adicionar um item novo.")
     
-    # Catálogo completo espelhado de todas as abas da sua planilha
+    # Catálogo completo incluindo todas as abas identificadas
     catalogo_abas = {
         "Harry Potter": {
             "HP1 (Livros)": 51.00, "HP2": 33.45, "HP3": 75.12, "HP4 (Chapéu Seletor)": 48.32, 
@@ -45,6 +45,9 @@ with aba1:
         "Patricia": {
             "md1 (Patricia)": 57.17, "md2": 46.72, "md4": 30.21, "md5": 35.94
         },
+        "Débora": {
+            "Estrela Sensorial": 38.39, "Cubo Infinito": 30.83, "Estrela Modular": 75.34, "Ovo": 37.14
+        },
         "Personalizados": {
             "projeto mih": 20.17, "SDPS": 42.44, "michel": 101.65, "tempestade ge de": 46.03
         },
@@ -54,15 +57,27 @@ with aba1:
         "Em Site": {
             "Chaveiro Pokebola": 6.96, "Funko Pop Miles Morales": 11.71, "Estrela Sensorial": 15.55, 
             "Funko Pop Homem Aranha": 11.93, "Suporte de Livros Levitam": 15.42
+        },
+        "Outros / Digitar Manual": {
+            "Outro Produto": 0.00
         }
     }
     
     col1, col2, col3, col4, col5 = st.columns(5)
     with col1: cli = st.text_input("Nome do Cliente / Projeto")
     with col2: cat_escolhida = st.selectbox("Aba da Planilha", list(catalogo_abas.keys()))
-    with col3: prod_escolhido = st.selectbox("Produto / Nome", list(catalogo_abas[cat_escolhida].keys()))
     
-    val_sugerido = catalogo_abas[cat_escolhida][prod_escolhido]
+    produtos_disponiveis = list(catalogo_abas[cat_escolhida].keys())
+    with col3: 
+        prod_escolhido = st.selectbox("Produto / Nome", produtos_disponiveis)
+    
+    # Se escolher "Outro Produto", permite digitar o nome livremente
+    if prod_escolhido == "Outro Produto":
+        prod_escolhido = st.text_input("Digite o nome do produto novo", value="Novo Item")
+        val_sugerido = 0.0
+    else:
+        val_sugerido = catalogo_abas[cat_escolhida][prod_escolhido]
+
     with col4: val = st.number_input("Valor de Venda (R$)", value=val_sugerido, min_value=0.0, step=0.01)
     with col5: status = st.selectbox("Status do Pedido", ["Pendente", "Pago"])
     
