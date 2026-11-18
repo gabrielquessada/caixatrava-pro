@@ -10,7 +10,7 @@ st.markdown("---")
 if 'pedidos' not in st.session_state:
     st.session_state.pedidos = pd.DataFrame([
         {"Cliente": "Michel", "Categoria": "Personalizados", "Produto": "michel", "Valor": 101.65, "Status": "Pago", "Filamento": 19.46, "Eletricidade": 1.10, "Impressora": 12.81, "Trabalho": 30.00, "Lucro": 20.00},
-        {"Cliente": "Harry Fã", "Categoria": "Harry Potter", "Produto": "HP1 (Livros)", "Valor": 51.00, "Status": "Pendente", "Filamento": 20.44, "Eletricidade": 0.83, "Impressora": 2.78, "Trabalho": 2.50, "Lucro": 10.00}
+        {"Cliente": "Harry Fã", "Categoria": "Harry Potter", "Produto": "HP1", "Valor": 51.00, "Status": "Pendente", "Filamento": 20.44, "Eletricidade": 0.83, "Impressora": 2.78, "Trabalho": 2.50, "Lucro": 10.00}
     ])
 
 if 'gastos' not in st.session_state:
@@ -28,25 +28,25 @@ if 'metas' not in st.session_state:
 aba1, aba2, aba3, aba4, aba5 = st.tabs(["📦 Pedidos & Catálogo", "💳 Gastos (Trava)", "🎯 Metas", "📈 Investimentos", "📊 Gráficos & Análise"])
 
 with aba1:
-    st.subheader("📦 Gestão de Pedidos (Todas as Abas + Cadastro Manual)")
-    st.markdown("Escolha a aba da planilha ou digite diretamente o nome do produto caso queira adicionar um item novo.")
+    st.subheader("📦 Gestão de Pedidos (Todas as Abas e Produtos da Planilha)")
+    st.markdown("Selecione qualquer aba e produto cadastrado nas suas planilhas de custos ou adicione um item manual.")
     
-    # Catálogo completo incluindo todas as abas identificadas
+    # Catálogo completo extraído de todas as abas das suas planilhas
     catalogo_abas = {
         "Harry Potter": {
-            "HP1 (Livros)": 51.00, "HP2": 33.45, "HP3": 75.12, "HP4 (Chapéu Seletor)": 48.32, 
-            "HP5": 19.83, "HP6": 27.88, "HP7": 29.39, "HP8 (Suporte Livros)": 37.23, 
-            "HP9": 66.72, "HP10": 68.42, "HP16 (Pomo de Ouro)": 33.40, "HP18": 20.28, "HP21": 16.90, "HP22": 73.02
+            "HP1": 51.00, "HP2": 33.45, "HP3": 75.12, "HP4": 48.32, "HP5": 19.83, 
+            "HP6": 27.88, "HP7": 29.39, "HP8": 37.23, "HP9": 66.72, "HP10": 68.42, 
+            "HP16": 33.40, "HP18": 20.28, "HP21": 16.90, "HP22": 73.02
         },
         "Natal": {
-            "md1 (Árvore/Decoração)": 68.38, "Rejiane (Enfeite)": 72.96, "Silvanna": 50.61, 
-            "Jussara": 70.74, "Mirielle": 59.26, "Viviane": 73.99, "Glaucia": 78.01, "Glaucia 4.1": 104.91
+            "md1": 68.38, "rejiane": 72.96, "silvanna 1": 50.61, "jussara": 70.74, 
+            "mirielle": 59.26, "viviane": 73.99, "glaucia": 78.01, "glaucia 4.1": 104.91
         },
         "Patricia": {
-            "md1 (Patricia)": 57.17, "md2": 46.72, "md4": 30.21, "md5": 35.94
+            "md1": 57.17, "md2": 46.72, "md4": 30.21, "md5": 35.94
         },
         "Débora": {
-            "Estrela Sensorial": 38.39, "Cubo Infinito": 30.83, "Estrela Modular": 75.34, "Ovo": 37.14
+            "estrela sensorial": 38.39, "cubo infinito": 30.83, "estrela modular": 75.34, "ovo": 37.14
         },
         "Personalizados": {
             "projeto mih": 20.17, "SDPS": 42.44, "michel": 101.65, "tempestade ge de": 46.03
@@ -54,12 +54,53 @@ with aba1:
         "Nomes": {
             "MIGUEL": 18.74, "MILENA": 18.80, "pedro": 18.40
         },
-        "Em Site": {
-            "Chaveiro Pokebola": 6.96, "Funko Pop Miles Morales": 11.71, "Estrela Sensorial": 15.55, 
-            "Funko Pop Homem Aranha": 11.93, "Suporte de Livros Levitam": 15.42
+        "Chaveiros": {
+            "Boca": 21.39, "protetor labial": 30.00, "Festival Paritins": 21.39
         },
-        "Outros / Digitar Manual": {
-            "Outro Produto": 0.00
+        "Chaveiros Pokémon": {
+            "Charizard": 25.00, "Charizard 2": 25.00, "Mew": 25.00
+        },
+        "Como Treinar Seu Dragão": {
+            "CTD01": 17.90, "CTD02": 17.90, "CTD03": 17.90
+        },
+        "Corinthians": {
+            "2porta copos": 34.83, "suporte": 32.24
+        },
+        "Dia Dos Namorados": {
+            "Marcador": 19.65, "groot": 26.81, "CORAÇÃO": 14.46
+        },
+        "Dia Dos Pais": {
+            "2 cores": 25.00, "1 cor": 25.00, "mão": 25.00
+        },
+        "Em Site": {
+            "Suporte de Livros Levitam": 19.64, "chaveiro pokebola": 9.77, "funko pop miles morales": 15.65
+        },
+        "Funko Pop": {
+            "MIRA": 63.80
+        },
+        "Jão Barbeiro": {
+            "Cabo Magnético para DJI Mic Mini": 25.00
+        },
+        "Leticia": {
+            "I Spy": 25.00, "bandeja": 25.00, "dedos": 25.00
+        },
+        "Organizador De Mesa": {
+            "OM1": 25.00, "OM2": 25.00, "OM3": 25.00
+        },
+        "Odontologia": {
+            "DNT1": 25.00, "kit 4 hashi": 25.00, "Porta Canetas": 25.00
+        },
+        "Pequeno Principe": {
+            "PP1": 27.37
+        },
+        "Professores": {
+            "suporte celular": 25.00, "maça termo": 25.00
+        },
+        "Suporte De Joias": {
+            "Organizador de Joias": 25.00, "Suporte para Brincos": 25.00
+        },
+        "Outro / Digitar Manual": {
+            "Novo Produto": 0.00
         }
     }
     
@@ -71,14 +112,13 @@ with aba1:
     with col3: 
         prod_escolhido = st.selectbox("Produto / Nome", produtos_disponiveis)
     
-    # Se escolher "Outro Produto", permite digitar o nome livremente
-    if prod_escolhido == "Outro Produto":
-        prod_escolhido = st.text_input("Digite o nome do produto novo", value="Novo Item")
+    if prod_escolhido == "Novo Produto":
+        prod_escolhido = st.text_input("Digite o nome do produto novo", value="Item Novo")
         val_sugerido = 0.0
     else:
         val_sugerido = catalogo_abas[cat_escolhida][prod_escolhido]
 
-    with col4: val = st.number_input("Valor de Venda (R$)", value=val_sugerido, min_value=0.0, step=0.01)
+    with col4: val = st.number_input("Valor de Venda (R$)", value=float(val_sugerido), min_value=0.0, step=0.01)
     with col5: status = st.selectbox("Status do Pedido", ["Pendente", "Pago"])
     
     if st.button("Adicionar Pedido"):
